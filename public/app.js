@@ -17,7 +17,7 @@ app.client = {};
 //Interface for making api calls
 app.client.request = function(headers,path,method,queryStringObject,payload,callback){
 
-  console.log(path,method,'sssssssssssssss',payload)
+  //console.log(path,method,'sssssssssssssss',payload)
   //set Default
   headers = typeof(headers) == 'object' && headers !== null ? headers : {};
   path = typeof(path) == 'string' ? path : '/';
@@ -41,7 +41,7 @@ app.client.request = function(headers,path,method,queryStringObject,payload,call
       requestUrl += queryKey + '=' + queryStringObject[queryKey]
     }
   }
-  console.log('ajjjjjjjjjjjjjjjjj',method,path)
+  //console.log('ajjjjjjjjjjjjjjjjj',method,path)
   let xhr = new XMLHttpRequest();
   xhr.open(method,requestUrl,true);
   xhr.setRequestHeader("Content-Type","application/json");
@@ -103,14 +103,15 @@ app.bindForms = function(){
         // Turn the inputs into a payload
         var payload = {};
         var elements = e.elements;
-        console.log(formId,path,method,elements,'kkkkkkkkkkkkkkkkkkkkk')
+        console.log(payload)
+        //console.log(formId,path,method,elements,'kkkkkkkkkkkkkkkkkkkkk')
 
         for(var i = 0; i < elements.length; i++){
           if(elements[i].type !== 'submit'){
           //  console.log(elements[i],elements[i].type,'zzzzzzzzzzzzzzzzzzzzz')
             //var valueOfElement = elements[i].type == 'checkbox'  ? elements[i].checked : elements[i].value ;
             if (elements[i].type == 'checkbox'){
-              console.log(payload[elements[i].name])
+              //console.log(payload[elements[i].name])
               if (elements[i].checked){
                 if (payload[elements[i].name] !== undefined){
                   payload[elements[i].name].push(elements[i].value)
@@ -123,11 +124,11 @@ app.bindForms = function(){
               payload[elements[i].name] = elements[i].value;
             }
 
-            console.log(payload,'mmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmm')
-            console.log(elements[i].value,elements[i].name == '_method',['DELETE','PUT'].indexOf(elements[i].value) > -1,elements[i].checked,elements[i].value,'dear');
+            //console.log(payload,'mmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmm')
+            //console.log(elements[i].value,elements[i].name == '_method',['DELETE','PUT'].indexOf(elements[i].value) > -1,elements[i].checked,elements[i].value,'dear');
             if ((elements[i].name == '_method')  && (['DELETE','PUT'].indexOf(elements[i].value) > -1)){
               method = elements[i].value;
-              console.log(elements[i].value,'dog')
+              //console.log(elements[i].value,'dog')
             }
           }
         }
@@ -150,6 +151,7 @@ app.bindForms = function(){
 
               // Show (unhide) the form error field on the form
               document.querySelector("#"+formId+" .formError").style.display = 'block';
+
             }
           } else {
             // If successful, send to form response processor
@@ -202,7 +204,7 @@ app.loadChecksListPage = function(){
                 var td3 = tr.insertCell(3);
                 var td4 = tr.insertCell(4);
                 td0.innerHTML = responsePayloadChecks.method.toUpperCase();
-                td1.innerHTML = responsePayloadChecks.protocol+'://';
+                td1.innerHTML = responsePayloadChecks.protocall+'://';
                 td2.innerHTML = responsePayloadChecks.url;
                 var state = typeof(responsePayloadChecks.state) == 'string' ? responsePayloadChecks.state : 'unknown';
                 td3.innerHTML = state;
@@ -269,10 +271,10 @@ app.formResponseProcessor = function(formId,requestPayload,responsePayload){
   if(formId == 'accountCreate'){
     // Take the phone and password, and use it to log the user in
     var newPayload = {
-      'phoneNumber' : requestPayload.phone,
+      'phone' : requestPayload.phone,
       'password' : requestPayload.password
     };
-
+    //headers,path,method,queryStringObject,payload,callback
     app.client.request(undefined,'api/tokens','POST',undefined,newPayload,function(newStatusCode,newResponsePayload){
       // Display an error on the form if needed
       if(newStatusCode !== 200){
@@ -351,7 +353,7 @@ app.bindLogoutButton = function(){
 
 // Log the user out then redirect them
 app.logUserOut = function(){
-  console.log('f')
+  //console.log('f')
   // Get the current token id
   var tokenId = typeof(app.config.sessionToken.token) == 'string' ? app.config.sessionToken.token : false;
 
@@ -417,15 +419,12 @@ app.loadAccountEditPage = function(){
     console.log(statusCode)
     app.logUserOut();
   }
-
-
-
 };
 
 
 // Set the session token in the app.config object as well as localstorage
 app.setSessionToken = function(token){
-  console.log('j')
+  console.log('j',token)
   app.config.sessionToken = token;
   var tokenString = JSON.stringify(token);
   localStorage.setItem('token',tokenString);
@@ -448,6 +447,8 @@ app.renewToken = function(callback){
     };
     app.client.request(undefined,'api/tokens','PUT',undefined,payload,function(statusCode,responsePayload){
       // Display an error on the form if needed
+      console.log(responsePayload,'iiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiii')
+
       if(statusCode == 200){
         // Get the new token details
         var queryStringObject = {'id' : currentToken.id};
